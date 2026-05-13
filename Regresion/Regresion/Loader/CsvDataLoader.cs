@@ -5,22 +5,33 @@ namespace Regresion.Loader;
 
 public static class CsvDataLoader
 {
-    public static (double[] ma30, double[] close) LoadWith(string filePath, int days)
+    public static (double[] ma30, double[] close) LoadWith(string filePath, int days, string nameX, string nameY)
     {
         using var reader = new StreamReader(filePath);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
 
-        var records = csv.GetRecords<Gold>().TakeLast(days).ToList();
+        csv.Read();
+        csv.ReadHeader();
+        List<double> xList = new List<double>();
+        List<double> yList = new List<double>();
+        while (csv.Read())
+        {
+            double valX = csv.GetField<double>(nameX);
+            double valY = csv.GetField<double>(nameY);
 
-        double[] X = records.Select(r => r.ma_30).ToArray();
-        double[] Y = records.Select(r => r.close).ToArray();
+            xList.Add(valX);
+            yList.Add(valY);
+        }
+        
+        double[] X = xList.ToArray();
+        double[] Y = yList.ToArray();
 
         return (X, Y);
     }
 }
 
-public class Gold
+public class TheAxes
 {
-    public double ma_30 { get; set; }
-    public double close { get; set; }
+    public double AxeX { get; set; }
+    public double AxeY { get; set; }
 }

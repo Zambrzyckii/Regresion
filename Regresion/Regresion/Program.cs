@@ -4,7 +4,12 @@ using ScottPlot;
 
 int degree = 3;
 
-var (xArr, yArr) = CsvDataLoader.LoadWith("gold_futures_timeseries.csv", 150);
+Console.WriteLine("Name for X: ");
+string inputX = Console.ReadLine();
+Console.WriteLine("Name for Y: ");
+string inputY = Console.ReadLine();
+
+var (xArr, yArr) = CsvDataLoader.LoadWith("gold_futures_timeseries.csv", 150, inputX, inputY);
 
 //scaling
 
@@ -77,5 +82,5 @@ predPlot.LineColor = new Color(0, 255, 255);
 plt.Title("Results");
 plt.XLabel("MA 30");
 plt.YLabel("CLOSE");
-plt.SavePng("samples.png",800,600);
+plt.SavePng("samples.png",1920,1080);
 
