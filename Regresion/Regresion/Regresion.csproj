@@ -7,9 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="CsvHelper" Version="33.1.0" />
       <PackageReference Include="MathNet.Numerics" Version="6.0.0-beta2" />
       <PackageReference Include="ScottPlot" Version="5.1.58" />
+      <PackageReference Include="Spectre.Console" Version="0.55.3-alpha.0.15" />
+      <PackageReference Include="Spectre.Console.ImageSharp" Version="0.55.3-alpha.0.15" />
     </ItemGroup>
 
 </Project>

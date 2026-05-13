@@ -1,26 +1,31 @@
+using System.Diagnostics;
+using CommandLine;
 using Regresion.Algorithms;
+using Regresion.Inputs;
 using Regresion.Loader;
 using ScottPlot;
+using Spectre.Console;
 
-int degree = 3;
+string? filePath = string.Empty;
+IEnumerable<string?> AxisX = new List<string?>();
+string? AxisY = string.Empty;
+int degree = 6;
 
-Console.WriteLine("Name for X: ");
-string inputX = Console.ReadLine();
-Console.WriteLine("Name for Y: ");
-string inputY = Console.ReadLine();
+Parser.Default.ParseArguments<InputOptions>(args).WithParsed<InputOptions>(options =>
+{
+    filePath = options.csvFilePath;
+    AxisX = options.axisX;
+    AxisY = options.axisY;
+});
 
-var (xArr, yArr) = CsvDataLoader.LoadWith("gold_futures_timeseries.csv", 150, inputX, inputY);
+if (string.IsNullOrEmpty(filePath) || !AxisX.Any() || string.IsNullOrEmpty(AxisY)) return;
+
+var (xArr, yArr) = CsvDataLoader.LoadWith(filePath, 50, AxisX, AxisY);
 
 //scaling
 
-double minX = xArr.Min();
-double maxX = xArr.Max();
-for (int i = 0; i < xArr.Length; i++)
-{
-    xArr[i] = ((xArr[i] - minX) / (maxX - minX)) * 10;
-}
 
-double[,] matrixX = BuildMatrix.Build_X_Matrix(xArr, degree);
+double[,] matrixX = BuildMatrix.Build_Multiple_X_Matrix(xArr);
 int n = yArr.Length;
 double[,] matrixY = new double[n, 1];
 for (int i = 0; i < n; i++)
@@ -31,7 +36,7 @@ for (int i = 0; i < n; i++)
 double[,] X_T = MyTranspose.CallMyTranspose(matrixX);
 double[,] X_T_X = MultiplyMatrix.Multi(X_T, matrixX);
 
-double[,] inverse = Inverse.InvertMatrix(X_T_X);
+double[,]? inverse = Inverse.InvertMatrix(X_T_X);
 if (inverse == null) return;
 
 double[,] X_T_y = MultiplyMatrix.Multi(X_T, matrixY);
@@ -45,10 +50,19 @@ for (int i = 0; i < theta.GetLength(0); i++)
 }
 
 List<double> yPredictied = new List<double>();
-foreach (double x in xArr)
+int rowsCount = xArr.GetLength(0);
+int colsCount = xArr.GetLength(1);
+
+for (int i = 0; i < rowsCount; i++)
 {
-    double predicatedValue = Evaluate.EvaluatePolynominal(x, predictedCoeff);
-    yPredictied.Add(predicatedValue);
+    double[] rowFeatues = new double[colsCount];
+    for (int j = 0; j < colsCount; j++)
+    {
+        rowFeatues[j] = xArr[i, j];
+    }
+
+    double pred = Evaluate.EvaluateMultiple(rowFeatues, predictedCoeff);
+    yPredictied.Add(pred);
 }
 
 double mse = 0;
@@ -65,22 +79,52 @@ Console.WriteLine($"MSE: {mse}");
 
 double[] ys_pred = yPredictied.ToArray();
 
+var table = new Table();
+table.AddColumn("ID");
+table.AddColumn(new TableColumn("Wartość oczekiwana").Centered());
+table.AddColumn(new TableColumn("Predykcja").Centered());
+table.AddColumn("status");
+for (int i = 0; i < ys_pred.Length; i++)
+{
+    double expected = yArr[i];
+    double predicted = ys_pred[i];
+    double difference = Math.Abs(predicted - expected);
 
+    string status = difference switch
+    {
+        > 100 => "[red bold] Anomaly [/]",
+        > 50 => "[blue] Not Bad [/]",
+        _ => "[green] Success [/]"
+    };
 
+    table.AddRow(
+        i.ToString(), 
+        expected.ToString("F2"), 
+        predicted.ToString("F2"), 
+        status
+    );
+}
+AnsiConsole.Write(table);
 ScottPlot.Plot plt = new();
 
-var realplot = plt.Add.Scatter(xArr, yArr);
+var realplot = plt.Add.Scatter(yArr, ys_pred);
 realplot.LineWidth = 0;
 realplot.MarkerSize = 5;
-realplot.Color = new Color(255, 0, 0);
-Array.Sort(xArr,ys_pred);
-var predPlot = plt.Add.Scatter(xArr, ys_pred);
-predPlot.MarkerSize = 0;
-predPlot.LineWidth = 3;
-predPlot.LineColor = new Color(0, 255, 255);
 
-plt.Title("Results");
-plt.XLabel("MA 30");
-plt.YLabel("CLOSE");
+double minVal = yArr.Min();
+double maxVal = yArr.Max();
+var perfectLine = plt.Add.Line(minVal, minVal, maxVal, maxVal);
+perfectLine.Color = new ScottPlot.Color(255, 0, 0);
+perfectLine.LinePattern = ScottPlot.LinePattern.Dashed;
+
+plt.Title("Actual vs Predicted");
+plt.XLabel("Real price");
+plt.YLabel("Predicted price");
 plt.SavePng("samples.png",1920,1080);
+
+Process.Start(new ProcessStartInfo
+{
+    FileName = "samples.png",
+    UseShellExecute = true 
+});
 

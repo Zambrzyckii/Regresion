@@ -14,4 +14,15 @@ public static class Evaluate
         
         return result;
     }
+
+    public static double EvaluateMultiple(double[] rowFeatures, List<double> theta)
+    {
+        double result = theta[0];
+        for (int i = 0; i < rowFeatures.Length; i++)
+        {
+            result += theta[i + 1] * rowFeatures[i];
+        }
+
+        return result;
+    }
 }

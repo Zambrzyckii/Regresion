@@ -2,7 +2,7 @@ namespace Regresion.Algorithms;
 
 public static class Inverse
 {
-    public static double[,] InvertMatrix(double[,] matrix)
+    public static double[,]? InvertMatrix(double[,] matrix)
     {
         int n = matrix.GetLength(0);
         double[,] augmented = new double[n, n * 2];
