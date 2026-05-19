@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Options;
 
 namespace Regresion.Inputs;
@@ -8,7 +9,7 @@ public class InputOptions
     public string? csvFilePath { get; set; }
     
     [Option('x',"AxisX", Required = true, HelpText = "Give axis X")]
-    public IEnumerable<string?> axisX { get; set; }
+    public IEnumerable<string?>? axisX { get; set; }
     
     [Option('y',"AxisY", Required = true, HelpText = "Give axis y")]
     public string? axisY { get; set; }

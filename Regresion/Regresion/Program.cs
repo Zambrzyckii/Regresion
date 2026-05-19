@@ -3,13 +3,17 @@ using CommandLine;
 using Regresion.Algorithms;
 using Regresion.Inputs;
 using Regresion.Loader;
-using ScottPlot;
+using Regresion.Outputs;
 using Spectre.Console;
 
 string? filePath = string.Empty;
-IEnumerable<string?> AxisX = new List<string?>();
+IEnumerable<string?>? AxisX = new List<string?>();
 string? AxisY = string.Empty;
-int degree = 6;
+string encodedDataCsv = "encoded_data.csv";
+string pythonScriptName = "encode.py";
+string localPythonScriptPath = $"../Encoding/{pythonScriptName}";
+string dockerPythonScriptPath = pythonScriptName;
+string finalPythonScriptPath = File.Exists(localPythonScriptPath) ? localPythonScriptPath : dockerPythonScriptPath;
 
 Parser.Default.ParseArguments<InputOptions>(args).WithParsed<InputOptions>(options =>
 {
@@ -22,21 +26,16 @@ if (string.IsNullOrEmpty(filePath) || !AxisX.Any() || string.IsNullOrEmpty(AxisY
 
 //call python
 
-string encodedFile = "encoded_data.csv";
-string scriptName = "encode.py";
-string localPath = $"../Encoding/{scriptName}";
-string dockerpath = scriptName;
-string finalPath = File.Exists(localPath) ? localPath : dockerpath;
 var processInfo = new ProcessStartInfo
 {
     FileName = "python3",
-    Arguments = $"{finalPath} {filePath} {encodedFile}",
+    Arguments = $"{finalPythonScriptPath} {filePath} {encodedDataCsv}",
     UseShellExecute = false
 };
 
 using (var process = Process.Start(processInfo))
 {
-    process.WaitForExit();
+    process!.WaitForExit();
     if (process.ExitCode != 0)
     {
         Console.WriteLine("Something gone wrong with python parsing");
@@ -44,9 +43,8 @@ using (var process = Process.Start(processInfo))
     }
 }
 
-var (xArr, yArr) = CsvDataLoader.LoadWith(encodedFile, 50, AxisX, AxisY);
+var (xArr, yArr) = CsvDataLoader.LoadWith(encodedDataCsv, 50, AxisX!, AxisY);
 
-//scaling
 
 
 double[,] matrixX = BuildMatrix.Build_Multiple_X_Matrix(xArr);
@@ -102,7 +100,8 @@ Console.WriteLine($"Predicted coefficients: {string.Join(", ", predictedCoeff)}"
 Console.WriteLine($"MSE: {mse}");
 
 double[] ys_pred = yPredictied.ToArray();
-
+OutputTable.CreateOutputTable(yArr,ys_pred);
+/*
 var table = new Table();
 table.AddColumn("ID");
 table.AddColumn(new TableColumn("Wartość oczekiwana").Centered());
@@ -129,6 +128,7 @@ for (int i = 0; i < ys_pred.Length; i++)
     );
 }
 AnsiConsole.Write(table);
+*/
 ScottPlot.Plot plt = new();
 
 var realplot = plt.Add.Scatter(yArr, ys_pred);
