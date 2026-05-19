@@ -8,9 +8,9 @@ public static class OutputTable
     {
         var table = new Table();
         table.AddColumn("ID");
-        table.AddColumn(new TableColumn("Wartość oczekiwana").Centered());
-        table.AddColumn(new TableColumn("Predykcja").Centered());
-        table.AddColumn("status");
+        table.AddColumn(new TableColumn("Expected value").Centered());
+        table.AddColumn(new TableColumn("Prediction").Centered());
+        table.AddColumn("Status");
         for (int i = 0; i < yPredictedValues.Length; i++)
         {
             double expected = yArray[i];
@@ -25,12 +25,13 @@ public static class OutputTable
             };
 
             table.AddRow(
-                i.ToString(), 
-                expected.ToString("F2"), 
-                predicted.ToString("F2"), 
+                i.ToString(),
+                expected.ToString("F2"),
+                predicted.ToString("F2"),
                 status
             );
         }
+
         AnsiConsole.Write(table);
     }
 }

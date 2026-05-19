@@ -1,38 +1,52 @@
-﻿namespace Algorithms.Tests;
+﻿using Xunit;
 using Regresion.Algorithms;
+
+namespace Regresion.Tests;
+
 public class BuildMatrixTests
 {
     [Fact]
-    public void BuildXMatrix_ProperCalculations_True()
+    public void BuildXMatrix_ShouldGeneratePowersUpToDegree()
     {
-        double[] testTemp = new double[] { 1, 2, 3, 4, 5, 6, 7 };
-        var result = BuildMatrix.Build_X_Matrix(testTemp, 10);
-        var expectedResult = new double[]
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 2, 4, 8, 16, 32, 64, 128, 256, 512,
-            1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683,
-            1, 4, 16, 64, 256, 1024, 4096, 16384, 65536, 262144,
-            1, 5, 25, 125, 625, 3125, 15625, 78125, 390625, 1953125,
-            1, 6, 36, 216, 1296, 7776, 46656, 279936, 1679616, 10077696,
-            1, 7, 49, 343, 2401, 16807, 117649, 823543, 5764801, 40353607
-        };
-        //Assert.Equal(expectedResult, result);
+        double[] input = {2.0, 3.0};
+        int degree = 3;
+
+        double[,] result = BuildMatrix.Build_X_Matrix(input, degree);
+
+        Assert.Equal(2, result.GetLength(0));
+        Assert.Equal(4, result.GetLength(1));
+        Assert.Equal(1.0, result[0, 0]);
+        Assert.Equal(2.0, result[0, 1]);
+        Assert.Equal(4.0, result[0, 2]);
+        Assert.Equal(8.0, result[0, 3]);
+        Assert.Equal(1.0, result[1, 0]);
+        Assert.Equal(27.0, result[1, 3]);
     }
-    
+
     [Fact]
-    public void BuildXMatrix_InProperCalculations_False()
+    public void BuildMultipleXMatrix_ShouldPrependSoloColumn()
     {
-        double[] testTemp = new double[] { 1, 2, 3, 4, 5, 6, 7 };
-        var result = BuildMatrix.Build_X_Matrix(testTemp, 10);
-        var expectedResult = new double[] 
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 2, 4, 8, 16, 32, 64, 128, 256, 512,
-            1, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683,
-            1, 4, 16, 64, 256, 1024, 4096, 16384, 65536, 262144,
-            1, 5, 25, 125, 625, 3125, 15625, 78125, 390625, 1953125,
-            1, 6, 36, 216, 1296, 7776, 46656, 279936, 1679616, 10077696,
-            2, 7, 49, 343, 2401, 16807, 117649, 823543, 5764801, 40353607
-        };
-        //Assert.NotEqual(expectedResult, result);
+        double[,] input ={{50.0, 5.0}, {80.0, 10.0}};
+
+        double[,] result = BuildMatrix.Build_Multiple_X_Matrix(input);
+
+        Assert.Equal(2, result.GetLength(0));
+        Assert.Equal(3, result.GetLength(1));
+        Assert.Equal(1.0, result[0, 0]);
+        Assert.Equal(50.0, result[0, 1]);
+        Assert.Equal(5.0, result[0, 2]);
+        Assert.Equal(1.0, result[1, 0]);
+        Assert.Equal(10.0, result[1, 2]);
+    }
+
+    [Fact]
+    public void Build_MultipleXMatrix_WithEmptyArray_ShouldReturnEmptyWithSoloColumn()
+    {
+        double[,] emptyInput = new double[0, 5];
+
+        double[,] result = BuildMatrix.Build_Multiple_X_Matrix(emptyInput);
+
+        Assert.Equal(0, result.GetLength(0));
+        Assert.Equal(6, result.GetLength(1));
     }
 }

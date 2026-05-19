@@ -1,6 +1,19 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=739f1fcb_002Dc7ae_002D487c_002Dae4e_002D50c33e6b6ff9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=13aae0a7_002Dd8a9_002D4212_002D99c5_002D3c1ac97b014b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="BuildXMatrix_ShouldGeneratePowersUpToDegree" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Algorithms.Tests.BuildMatrixTests.BuildXMatrix_ProperCalculations_True&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Regresion.Tests.BuildMatrixTests.BuildXMatrix_ShouldGeneratePowersUpToDegree&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=739f1fcb_002Dc7ae_002D487c_002Dae4e_002D50c33e6b6ff9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Regresion.Tests.BuildMatrixTests.BuildXMatrix_ShouldGeneratePowersUpToDegree&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8507d482_002Da031_002D4fa2_002Db50b_002D847e0a1413b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="BuildMultipleXMatrix_ShouldPrependSoloColumn" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Regresion.Tests.BuildMatrixTests.BuildMultipleXMatrix_ShouldPrependSoloColumn&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Regresion.Tests.BuildMatrixTests.Build_MultipleXMatrix_WithEmptyArray_ShouldReturnEmptyWithSoloColumn&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Regresion.Tests.EvaluateTests&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::C0B5B7E1-A7EE-4BB2-A65A-05A15FEF04A0::net10.0::Regresion.Tests.MultiplyMatrixTests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

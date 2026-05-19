@@ -4,7 +4,6 @@ using Regresion.Algorithms;
 using Regresion.Inputs;
 using Regresion.Loader;
 using Regresion.Outputs;
-using Spectre.Console;
 
 string? filePath = string.Empty;
 IEnumerable<string?>? AxisX = new List<string?>();
@@ -23,8 +22,6 @@ Parser.Default.ParseArguments<InputOptions>(args).WithParsed<InputOptions>(optio
 });
 
 if (string.IsNullOrEmpty(filePath) || !AxisX.Any() || string.IsNullOrEmpty(AxisY)) return;
-
-//call python
 
 var processInfo = new ProcessStartInfo
 {
@@ -45,15 +42,9 @@ using (var process = Process.Start(processInfo))
 
 var (xArr, yArr) = CsvDataLoader.LoadWith(encodedDataCsv, 50, AxisX!, AxisY);
 
-
-
 double[,] matrixX = BuildMatrix.Build_Multiple_X_Matrix(xArr);
-int n = yArr.Length;
-double[,] matrixY = new double[n, 1];
-for (int i = 0; i < n; i++)
-{
-    matrixY[i, 0] = yArr[i];
-}
+double[,] matrixY = new double[yArr.Length, 1];
+FillMatrixY(ref matrixY, yArr);
 
 double[,] X_T = MyTranspose.CallMyTranspose(matrixX);
 double[,] X_T_X = MultiplyMatrix.Multi(X_T, matrixX);
@@ -68,9 +59,8 @@ List<double> predictedCoeff = new List<double>();
 
 for (int i = 0; i < theta.GetLength(0); i++)
 {
-    predictedCoeff.Add(theta[i,0]);
+    predictedCoeff.Add(theta[i, 0]);
 }
-
 List<double> yPredictied = new List<double>();
 int rowsCount = xArr.GetLength(0);
 int colsCount = xArr.GetLength(1);
@@ -88,66 +78,28 @@ for (int i = 0; i < rowsCount; i++)
 }
 
 double mse = 0;
-for (int i = 0; i < n; i++)
+for (int i = 0; i < yArr.Length; i++)
 {
     double error = yArr[i] - yPredictied[i];
     mse += error * error;
 }
 
-mse /= n;
+mse /= yArr.Length;
 
 Console.WriteLine($"Predicted coefficients: {string.Join(", ", predictedCoeff)}");
 Console.WriteLine($"MSE: {mse}");
 
 double[] ys_pred = yPredictied.ToArray();
-OutputTable.CreateOutputTable(yArr,ys_pred);
-/*
-var table = new Table();
-table.AddColumn("ID");
-table.AddColumn(new TableColumn("Wartość oczekiwana").Centered());
-table.AddColumn(new TableColumn("Predykcja").Centered());
-table.AddColumn("status");
-for (int i = 0; i < ys_pred.Length; i++)
+
+OutputTable.CreateOutputTable(yArr, ys_pred);
+OutputGraph.CreateResultGraph(yArr, ys_pred);
+
+
+void FillMatrixY(ref double[,] matrixY, double[] yArr)
 {
-    double expected = yArr[i];
-    double predicted = ys_pred[i];
-    double difference = Math.Abs(predicted - expected);
-
-    string status = difference switch
+    int n = yArr.Length;
+    for (int i = 0; i < yArr.Length; i++)
     {
-        > 100 => "[red bold] Anomaly [/]",
-        > 50 => "[blue] Not Bad [/]",
-        _ => "[green] Success [/]"
-    };
-
-    table.AddRow(
-        i.ToString(), 
-        expected.ToString("F2"), 
-        predicted.ToString("F2"), 
-        status
-    );
+        matrixY[i, 0] = yArr[i];
+    }
 }
-AnsiConsole.Write(table);
-*/
-ScottPlot.Plot plt = new();
-
-var realplot = plt.Add.Scatter(yArr, ys_pred);
-realplot.LineWidth = 0;
-realplot.MarkerSize = 5;
-
-double minVal = yArr.Min();
-double maxVal = yArr.Max();
-var perfectLine = plt.Add.Line(minVal, minVal, maxVal, maxVal);
-perfectLine.Color = new ScottPlot.Color(255, 0, 0);
-perfectLine.LinePattern = ScottPlot.LinePattern.Dashed;
-
-plt.Title("Actual vs Predicted");
-plt.XLabel("Real price");
-plt.YLabel("Predicted price");
-plt.SavePng("samples.png",1920,1080);
-
-string outputFolder = Directory.Exists("/data") ? "/data" : ".";
-string imagePath = Path.Combine(outputFolder, "samples.png");
-plt.SavePng(imagePath, 1920, 1080);
-Console.WriteLine("\nResult graph -> samples.png");
-
