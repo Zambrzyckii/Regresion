@@ -20,7 +20,31 @@ Parser.Default.ParseArguments<InputOptions>(args).WithParsed<InputOptions>(optio
 
 if (string.IsNullOrEmpty(filePath) || !AxisX.Any() || string.IsNullOrEmpty(AxisY)) return;
 
-var (xArr, yArr) = CsvDataLoader.LoadWith(filePath, 50, AxisX, AxisY);
+//call python
+
+string encodedFile = "encoded_data.csv";
+string scriptName = "encode.py";
+string localPath = $"../Encoding/{scriptName}";
+string dockerpath = scriptName;
+string finalPath = File.Exists(localPath) ? localPath : dockerpath;
+var processInfo = new ProcessStartInfo
+{
+    FileName = "python3",
+    Arguments = $"{finalPath} {filePath} {encodedFile}",
+    UseShellExecute = false
+};
+
+using (var process = Process.Start(processInfo))
+{
+    process.WaitForExit();
+    if (process.ExitCode != 0)
+    {
+        Console.WriteLine("Something gone wrong with python parsing");
+        return;
+    }
+}
+
+var (xArr, yArr) = CsvDataLoader.LoadWith(encodedFile, 50, AxisX, AxisY);
 
 //scaling
 
@@ -122,9 +146,8 @@ plt.XLabel("Real price");
 plt.YLabel("Predicted price");
 plt.SavePng("samples.png",1920,1080);
 
-Process.Start(new ProcessStartInfo
-{
-    FileName = "samples.png",
-    UseShellExecute = true 
-});
+string outputFolder = Directory.Exists("/data") ? "/data" : ".";
+string imagePath = Path.Combine(outputFolder, "samples.png");
+plt.SavePng(imagePath, 1920, 1080);
+Console.WriteLine("\nResult graph -> samples.png");
 
